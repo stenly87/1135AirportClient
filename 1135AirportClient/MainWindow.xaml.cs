@@ -31,7 +31,7 @@ namespace _1135AirportClient
         async Task Test()
         {
             var result = await Api.GetAsync<AircompanyApi>(1, "Aircompany");
-            //var city = await Api.GetListAsync<CityApi[]>("City");
+            var city = await Api.GetListAsync<CityApi[]>("City");
         }
     }
 }

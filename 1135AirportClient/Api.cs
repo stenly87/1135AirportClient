@@ -17,7 +17,7 @@ namespace _1135AirportClient
             PropertyNameCaseInsensitive = true
         };
 
-        public static async Task<T> GetListAsync<T>(string controller) where T : ModelsApi.ApiBaseType
+        public static async Task<T> GetListAsync<T>(string controller)
         {
             var answer = await client.GetAsync(server + controller);
             string answerText = await answer.Content.ReadAsStringAsync();
@@ -28,9 +28,18 @@ namespace _1135AirportClient
         public static async Task<T> GetAsync<T>(int id, string controller) where T : ModelsApi.ApiBaseType
         {
             var answer = await client.GetAsync(server + controller + $"/{id}");
-            string answerText = await answer.Content.ReadAsStringAsync();
-            var result = (T)JsonSerializer.Deserialize(answerText, typeof(T), jsonOptions);
-            return result;
+            if (answer.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                string answerText = await answer.Content.ReadAsStringAsync();
+                var result = (T)JsonSerializer.Deserialize(answerText, typeof(T), jsonOptions);
+                return result;
+            }
+            else
+            {
+                // message
+                // log
+                return null;
+            }
         }
 
         public static async Task<int> PostAsync<T>(T value, string controller) where T : ModelsApi.ApiBaseType
@@ -54,7 +63,6 @@ namespace _1135AirportClient
 
         public static async Task<bool> DeleteAsync<T>(T value, string controller) where T : ModelsApi.ApiBaseType
         {
-            var str = JsonSerializer.Serialize(value, typeof(T));
             var answer = await client.DeleteAsync(server + controller + $"/{value.Id}");
             return answer.StatusCode == System.Net.HttpStatusCode.OK;
         }
